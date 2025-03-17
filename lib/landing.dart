@@ -4,6 +4,8 @@ import 'package:tired/change.dart';
 import 'package:tired/calendar_page.dart';
 import 'Profile_page.dart';
 import 'Team_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -57,48 +59,51 @@ class _ISTEAppState extends State<ISTEApp> {
         MoreOptionsPage(isDarkMode: isDarkMode)
       ];
     return Scaffold(
+      backgroundColor: isDarkMode ? const Color(0xFF131318) : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blue,
         elevation: 0,
-        title: Center(
+        title: const Center(
           child: Text(
             'ISTE : NITK',
             style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.more_vert_rounded,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Colors.white,
           ),
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                 MoreOptionsPage(isDarkMode: isDarkMode),
+                builder: (context) => MoreOptionsPage(isDarkMode: isDarkMode),
               ),
             );
           },
         ),
-        shape: Border(
-          bottom: BorderSide(
-            color: isDarkMode ? Colors.white : Colors.black,
-            width: 1.0,
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                isDarkMode = !isDarkMode;
+              });
+            },
           ),
-        ),
+        ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: isDarkMode?Colors.white12:Colors.white,
-        ),
-        child: currentPages[currentIndex],
-      ),
+      body: currentPages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: isDarkMode ? const Color(0xFF131318) : Colors.white,
         selectedItemColor: isDarkMode ? Colors.white : Colors.black,
         unselectedItemColor: isDarkMode ? Colors.white70 : Colors.black54,
         currentIndex: currentIndex,
@@ -130,27 +135,6 @@ class _ISTEAppState extends State<ISTEApp> {
   }
 }
 
-class ChatPage extends StatelessWidget {
-  final bool isDarkMode;
-  const ChatPage({super.key, required this.isDarkMode});
-
-  @override
-  Widget build(BuildContext context) {
-
-
-    return Center(
-      child: Text(
-        'New chats here!',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: isDarkMode ? Colors.white : Colors.black,
-        ),
-      ),
-    );
-  }
-}
-
 class MoreOptionsPage extends StatelessWidget {
   final bool isDarkMode;
   const MoreOptionsPage({super.key, required this.isDarkMode});
@@ -159,19 +143,19 @@ class MoreOptionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: isDarkMode ? const Color(0xFF131318) : Colors.white,
       appBar: AppBar(
         title: Text(
           'More Options',
           style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
         ),
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        backgroundColor: Colors.blue,
         iconTheme: IconThemeData(
           color: isDarkMode ? Colors.white : Colors.black,
         ),
       ),
       body: ListView(
         children: [
-          Divider(color: isDarkMode ? Colors.white : Colors.black),
           ListTile(
             leading: Icon(
               Icons.lock,
@@ -216,13 +200,54 @@ class MoreOptionsPage extends StatelessWidget {
   }
 }
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
   final bool isDarkMode;
   const LandingPage({super.key, required this.isDarkMode});
 
   @override
-  Widget build(BuildContext context) {
+  State<LandingPage> createState() => _LandingPageState();
+}
 
+class _LandingPageState extends State<LandingPage> {
+  String userName = '';
+  String userRole = '';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      // Get current user
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser != null) {
+        final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            userName = userDoc.get('name') ?? '';
+            userRole = userDoc.get('sig') ?? '';
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -234,35 +259,36 @@ class LandingPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: isDarkMode ? Colors.white : Colors.black,
+                    backgroundColor: widget.isDarkMode ? Colors.white : Colors.black,
                     child: Icon(
                       Icons.person,
                       size: 50,
-                      color: isDarkMode ? Colors.black : Colors.white,
+                      color: widget.isDarkMode ? Colors.black : Colors.white,
                     ),
                   ),
                   SizedBox(height: 16),
-                  Text(
-                    'ABHIMANYU BINU',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'CRYPT',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: isDarkMode ? Colors.white70 : Colors.black54,
-                    ),
-                  ),
-                  Text(
-                    'NUB',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDarkMode ? Colors.white70 : Colors.black54,
-                    ),
+                  isLoading
+                      ? CircularProgressIndicator(
+                    color: widget.isDarkMode ? Colors.white : Colors.black,
+                  )
+                      : Column(
+                    children: [
+                      Text(
+                        userName.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: widget.isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      Text(
+                        userRole.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: widget.isDarkMode ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -273,17 +299,17 @@ class LandingPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: widget.isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: 16),
             EventBox(
               title: 'Dec 2: ISTE Meet the new recruits!',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
             ),
             EventBox(
               title: 'Dec 5: ISTE CRYPT : Meet\'n Greet',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
             ),
             SizedBox(height: 32),
             Text(
@@ -291,19 +317,19 @@ class LandingPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: widget.isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: 16),
             NotificationBox(
               sender: 'Ansh',
               message: 'Be there on time!',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
             ),
             NotificationBox(
               sender: 'Harsh',
               message: 'RR on December 6 bois!',
-              isDarkMode: isDarkMode,
+              isDarkMode: widget.isDarkMode,
             ),
           ],
         ),
@@ -320,28 +346,52 @@ class EventBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode ? Colors.black54 : Colors.grey,
-            offset: Offset(0, 2),
-            blurRadius: 4.0,
+    return InkWell(
+      onTap: () {
+        _showEventDetails(context);
+      },
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: isDarkMode ? Colors.black54 : Colors.grey,
+              offset: Offset(0, 2),
+              blurRadius: 4.0,
+            ),
+          ],
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
-        ],
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: isDarkMode ? Colors.white : Colors.black,
         ),
       ),
     );
   }
+
+void _showEventDetails(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Event Details'),
+        content: Text(title),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      );
+    },
+  );
+}
 }
 
 class NotificationBox extends StatelessWidget {
@@ -349,7 +399,8 @@ class NotificationBox extends StatelessWidget {
   final String message;
   final bool isDarkMode;
 
-  const NotificationBox({super.key,
+  const NotificationBox({
+    super.key,
     required this.sender,
     required this.message,
     required this.isDarkMode,
@@ -357,72 +408,67 @@ class NotificationBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: isDarkMode?Colors.white12:Colors.white,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode ? Colors.black54 : Colors.grey,
-            offset: Offset(0, 2),
-            blurRadius: 4.0,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            child: Text(
-              sender[0],
-              style: TextStyle(
-                color: isDarkMode ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: () {
+        _showNotificationDetails(context);
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: isDarkMode ? Colors.black54 : Colors.grey,
+              offset: Offset(0, 2),
+              blurRadius: 4.0,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: isDarkMode ? Colors.black : Colors.white,
+              child: Text(
+                sender[0],
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              '$sender: $message',
-              style: TextStyle(
-                color: isDarkMode ? Colors.white : Colors.black,
+            SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                '$sender: $message',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-}
 
-
-class ChangePasswordPage extends StatelessWidget {
-  final bool isDarkMode;
-  const ChangePasswordPage({super.key, required this.isDarkMode});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-
-        title: Text(
-          'Change Password',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-
-        child: Text(
-          'Here you can change your password!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
+  void _showNotificationDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Message from $sender'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:tired/landing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:ui';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -94,17 +95,10 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Container(
+      body:
+      Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.shade400,
-              Colors.purple.shade200,
-              Colors.pink.shade200,
-            ], // Gradient colors
-            begin: Alignment.topLeft,            // Start point of gradient
-            end: Alignment.bottomRight,          // End point of gradient
-          ),
+          color:Colors.blue
         ),
         child: SafeArea(
           child: Stack(
@@ -122,11 +116,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                   ),
-                  Image.asset(
-                    'assets/images/iste.png',
-                    width: 200,
-                    height: 200,
-                  ),
+                  Container( // Temporary debugging color
+                    child: Center(
+                      child: Image.asset('assets/images/iste1.png'),
+                    ),
+                  )
+
                 ],
               ),
               SingleChildScrollView(
@@ -333,12 +328,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue, Colors.white],
-            // Same gradient as other screens
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.blue,
         ),
         child: SingleChildScrollView(
           child: SafeArea(
@@ -348,13 +338,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 50),
+                      padding: EdgeInsets.only(top: 100),
                       child: Text(
                         'Complete Your Profile',
                         style: GoogleFonts.aboreto(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 40,
+                          fontSize: 30,
                         ),
                       ),
                     ),
@@ -377,7 +367,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           controller: _nameController,
                           decoration: InputDecoration(
                             labelText: 'Full Name',
-                            fillColor: Colors.white.withOpacity(0.3),
+                            fillColor: Colors.white.withOpacity(0.5),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(100),
@@ -395,7 +385,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           controller: _rollNoController,
                           decoration: InputDecoration(
                             labelText: 'Roll Number',
-                            fillColor: Colors.white.withOpacity(0.3),
+                            fillColor: Colors.white.withOpacity(0.5),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(100),
@@ -409,28 +399,32 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _phoneNoController,
-                          decoration: InputDecoration(
-                            labelText: 'Phone Number',
-                            fillColor: Colors.white.withOpacity(0.3),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
+                      TextFormField(
+                        controller: _phoneNoController,
+                        keyboardType: TextInputType.phone, // Ensures the numeric keyboard is displayed
+                        decoration: InputDecoration(
+                          labelText: 'Phone Number',
+                          fillColor: Colors.white.withOpacity(0.5),
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(100),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your phone number';
-                            }
-                            return null;
-                          },
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                            return 'Please enter a valid 10-digit phone number';
+                          }
+                          return null;
+                        },
+                      ),
                         const SizedBox(height: 20),
                         DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             labelText: "Select your SIG",
-                            fillColor: Colors.white.withOpacity(0.3),
+                            fillColor: Colors.white.withOpacity(0.5),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(100),
@@ -454,7 +448,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             labelText: "Select your year of graduation",
-                            fillColor: Colors.white.withOpacity(0.3),
+                            fillColor: Colors.white.withOpacity(0.5),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(100),
@@ -480,7 +474,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           readOnly: true,
                           decoration: InputDecoration(
                             labelText: "Date of Birth",
-                            fillColor: Colors.white.withOpacity(0.3),
+                            fillColor: Colors.white.withOpacity(0.5),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(100),
@@ -607,26 +601,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.shade400,
-              Colors.white,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.blue,
         ),
         child: SafeArea(
           child: Stack(
             children: [
-              Column(
+            Align(
+            alignment: Alignment.center, // Centers the topmost Column
+            child:Column(
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(top: 50),
                     child: Text(
                       'Join ISTE',
                       style: TextStyle(
-                        fontFamily: 'sans serif',
+                        fontFamily: 'Times New Roman',
                         color: Colors.black,
                         fontSize: 40,
                       ),
@@ -634,11 +623,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   Image.asset(
                     'assets/images/iste.png',
-                    width: 200,
-                    height: 200,
+                    width: 300,
+                    height: 300,
                   ),
                 ],
-              ),
+              ),),
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(
