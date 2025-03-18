@@ -259,7 +259,7 @@ class _LandingPageState extends State<LandingPage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: widget.isDarkMode ? Colors.white : Colors.black,
+                    backgroundColor: Colors.blue,
                     child: Icon(
                       Icons.person,
                       size: 50,
@@ -295,7 +295,7 @@ class _LandingPageState extends State<LandingPage> {
             ),
             SizedBox(height: 32),
             Text(
-              'UPCOMING EVENTS:',
+              'Upcoming Events',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -313,7 +313,7 @@ class _LandingPageState extends State<LandingPage> {
             ),
             SizedBox(height: 32),
             Text(
-              'NOTIFICATIONS:',
+              'Notifications',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -346,6 +346,13 @@ class EventBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Extract date portion from the title (assuming format "MMM D: Event Title")
+    final RegExp datePattern = RegExp(r'^([A-Za-z]+ \d+):(.*)$');
+    final match = datePattern.firstMatch(title);
+
+    final String dateText = match?.group(1) ?? '';
+    final String eventText = match?.group(2)?.trim() ?? title;
+
     return InkWell(
       onTap: () {
         _showEventDetails(context);
@@ -355,6 +362,7 @@ class EventBox extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 8.0),
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
           borderRadius: BorderRadius.circular(8.0),
           boxShadow: [
@@ -365,33 +373,79 @@ class EventBox extends StatelessWidget {
             ),
           ],
         ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
+        child: Row(
+          children: [
+            // Event icon
+            Container(
+              padding: EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.event,
+                color: Colors.white,
+                size: 24.0,
+              ),
+            ),
+            SizedBox(width: 16.0),
+            // Event content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Date with highlight
+                  if (dateText.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: isDarkMode ? Colors.blue[700] : Colors.blue[100],
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Text(
+                        dateText,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.blue[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0,
+                        ),
+                      ),
+                    ),
+                  SizedBox(height: 8.0),
+                  // Event title
+                  Text(
+                    eventText,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-void _showEventDetails(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Event Details'),
-        content: Text(title),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _showEventDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Event Details'),
+          content: Text(title),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class NotificationBox extends StatelessWidget {
@@ -406,8 +460,29 @@ class NotificationBox extends StatelessWidget {
     required this.isDarkMode,
   });
 
+  // Generate a consistent color based on sender name
+  Color _generateColorFromName(String name) {
+    // Create a hash from the name to get a consistent color
+    int hash = 0;
+    for (int i = 0; i < name.length; i++) {
+      hash = name.codeUnitAt(i) + ((hash << 5) - hash);
+    }
+
+    // Create a vibrant color (avoid too light or too dark colors)
+    int r = ((hash & 0xFF0000) >> 16) % 200 + 40;
+    int g = ((hash & 0x00FF00) >> 8) % 200 + 40;
+    int b = (hash & 0x0000FF) % 200 + 40;
+
+    return Color.fromRGBO(r, g, b, 1);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Color avatarColor = _generateColorFromName(sender);
+    // Get a good contrast color for text
+    final bool isAvatarDark = (avatarColor.red * 0.299 + avatarColor.green * 0.587 + avatarColor.blue * 0.114) < 128;
+    final Color textColor = isAvatarDark ? Colors.white : Colors.black;
+
     return InkWell(
       onTap: () {
         _showNotificationDetails(context);
@@ -416,8 +491,9 @@ class NotificationBox extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 8.0),
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
               color: isDarkMode ? Colors.black54 : Colors.grey,
@@ -427,25 +503,69 @@ class NotificationBox extends StatelessWidget {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: isDarkMode ? Colors.black : Colors.white,
-              child: Text(
-                sender[0],
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.bold,
+            // Enhanced avatar with dynamic color and decorative elements
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: avatarColor,
+                border: Border.all(
+                  color: isDarkMode ? Colors.white70 : Colors.black45,
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: avatarColor.withOpacity(0.5),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  sender.contains(' ')
+                      ? sender.split(' ').map((word) => word[0]).take(2).join('')
+                      : sender[0],
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),
             SizedBox(width: 16),
             Expanded(
-              child: Text(
-                '$sender: $message',
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Sender name in bold
+                  Text(
+                    sender,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  // Message content
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  // Timestamp or notification indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                  ),
+                ],
               ),
             ),
           ],

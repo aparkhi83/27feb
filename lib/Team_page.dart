@@ -365,13 +365,17 @@ class _TeamScreenState extends State<TeamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: widget.isDarkMode ? const Color(0xFF131318) : Colors.white,
-      appBar: AppBar(backgroundColor: widget.isDarkMode ? const Color(0xFF131318) : Colors.white,
-        title: Text('Team Hierarchy',
+      appBar: AppBar(
+        backgroundColor: widget.isDarkMode ? const Color(0xFF131318) : Colors.white,
+        title: Text(
+          'Team Hierarchy',
           style: TextStyle(
-          fontSize: 24, // Change font size
-          fontWeight: FontWeight.bold, // Adjust font weight
-          color: widget.isDarkMode?Colors.white:Colors.black, // Title color
-          ),),),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: widget.isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -380,18 +384,19 @@ class _TeamScreenState extends State<TeamScreen> {
               onChanged: filterSearchResults,
               decoration: InputDecoration(
                 labelText: 'Search',
+                labelStyle: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black),
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: widget.isDarkMode ? Colors.white : Colors.black),
               ),
             ),
           ),
           Expanded(
             child: ListView(
               children: [
-                _buildList('Admin Core', adminCore),
-                _buildList('Executive Core', executiveCore),
-                _buildList('Aux Core', auxCore),
-                _buildList('Executive Members', executiveMembers),
+                _buildList('Admin Core', adminCore, Icons.shield),
+                _buildList('Executive Core', executiveCore, Icons.stars),
+                _buildList('Aux Core', auxCore, Icons.support),
+                _buildList('Executive Members', executiveMembers, Icons.people),
               ],
             ),
           ),
@@ -400,7 +405,7 @@ class _TeamScreenState extends State<TeamScreen> {
     );
   }
 
-  Widget _buildList(String title, List<Map<String, String>> members) {
+  Widget _buildList(String title, List<Map<String, String>> members, IconData logoIcon) {
     // Filter members based on search query
     List<Map<String, String>> filteredMembers = members
         .where((member) => member['name']!.toLowerCase().contains(searchQuery))
@@ -412,28 +417,107 @@ class _TeamScreenState extends State<TeamScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold,color: widget.isDarkMode?Colors.white:Colors.black),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+          child: Row(
+            children: [
+              // Logo/Icon for the heading
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: widget.isDarkMode ? Colors.blue[800] : Colors.blue[100],
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(widget.isDarkMode ? 0.3 : 0.2),
+                      blurRadius: 6.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  logoIcon,
+                  color: widget.isDarkMode ? Colors.white : Colors.blue[800],
+                  size: 28,
+                ),
+              ),
+              SizedBox(width: 16),
+              // Heading text
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: widget.isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
+        // Divider to visually separate the heading from list items
+        Divider(
+          color: widget.isDarkMode ? Colors.grey[800] : Colors.grey[300],
+          thickness: 1.0,
+          indent: 16.0,
+          endIndent: 16.0,
+        ),
         ListView.builder(
-          shrinkWrap: true, // Prevents unnecessary scrolling
-          physics: NeverScrollableScrollPhysics(), // Prevents nested scrolling
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: filteredMembers.length,
           itemBuilder: (context, index) {
             final member = filteredMembers[index];
-            return ListTile(
-              textColor: widget.isDarkMode?Colors.white:Colors.black,
-              title: Text(member['name']!),
-              onTap: () => showMemberDetails(member),
+            return Padding(
+              padding: const EdgeInsets.only(left: 24.0), // Indent members to show hierarchy
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: _getColorForTeam(title),
+                  child: Text(
+                    member['name']![0], // First letter of name
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  member['name']!,
+                  style: TextStyle(
+                    color: widget.isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                subtitle: member['role'] != null
+                    ? Text(
+                  member['role']!,
+                  style: TextStyle(
+                    color: widget.isDarkMode ? Colors.grey[400] : Colors.grey[700],
+                  ),
+                )
+                    : null,
+                onTap: () => showMemberDetails(member),
+              ),
             );
           },
         ),
+        SizedBox(height: 10), // Space between sections
       ],
     );
+  }
+
+// Helper function to assign different colors to different teams
+  Color _getColorForTeam(String team) {
+    switch (team) {
+      case 'Admin Core':
+        return Colors.purple;
+      case 'Executive Core':
+        return Colors.blue;
+      case 'Aux Core':
+        return Colors.teal;
+      case 'Executive Members':
+        return Colors.amber[700]!;
+      default:
+        return Colors.grey;
+    }
   }
 
 
