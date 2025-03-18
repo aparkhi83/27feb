@@ -365,13 +365,6 @@ class EventBox extends StatelessWidget {
           border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
           borderRadius: BorderRadius.circular(8.0),
-          boxShadow: [
-            BoxShadow(
-              color: isDarkMode ? Colors.black54 : Colors.grey,
-              offset: Offset(0, 2),
-              blurRadius: 4.0,
-            ),
-          ],
         ),
         child: Row(
           children: [
@@ -494,35 +487,16 @@ class NotificationBox extends StatelessWidget {
           border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
           borderRadius: BorderRadius.circular(20.0),
-          boxShadow: [
-            BoxShadow(
-              color: isDarkMode ? Colors.black54 : Colors.grey,
-              offset: Offset(0, 2),
-              blurRadius: 4.0,
-            ),
-          ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Enhanced avatar with dynamic color and decorative elements
             Container(
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: avatarColor,
-                border: Border.all(
-                  color: isDarkMode ? Colors.white70 : Colors.black45,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: avatarColor.withOpacity(0.5),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ],
               ),
               child: Center(
                 child: Text(
@@ -548,7 +522,7 @@ class NotificationBox extends StatelessWidget {
                     style: TextStyle(
                       color: isDarkMode ? Colors.white : Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 4),
@@ -557,7 +531,7 @@ class NotificationBox extends StatelessWidget {
                     message,
                     style: TextStyle(
                       color: isDarkMode ? Colors.white70 : Colors.black87,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 6),

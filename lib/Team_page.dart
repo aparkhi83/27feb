@@ -382,11 +382,20 @@ class _TeamScreenState extends State<TeamScreen> {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               onChanged: filterSearchResults,
+              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black), // Text color
+              cursorColor: widget.isDarkMode ? Colors.white : Colors.blue, // Cursor color
               decoration: InputDecoration(
                 labelText: 'Search',
                 labelStyle: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black),
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search, color: widget.isDarkMode ? Colors.white : Colors.black),
+                // Border styling for dark mode
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: widget.isDarkMode ? Colors.grey : Colors.black45),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: widget.isDarkMode ? Colors.blue : Colors.blue),
+                ),
               ),
             ),
           ),
