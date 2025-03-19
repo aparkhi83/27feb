@@ -95,65 +95,64 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Colors.blue[800],
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35),
-            child: Column(
-              children: [
-                const SizedBox(height: 50),
-                const Text(
-                  'Welcome to ISTE',
-                  style: TextStyle(
-                    fontFamily: 'Arial',
-                    color: Colors.black,
-                    fontSize: 40,
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 35),
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
+              const Text(
+                'Welcome to ISTE',
+                style: TextStyle(
+                  fontFamily: 'Arial',
+                  color: Colors.black,
+                  fontSize: 40,
                 ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 3,bottom:3), // Offset for shadow effect
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.25,
-                        ),
-                        child: Image.asset(
-                          'assets/images/iste1.png',
-                          color: Colors.white.withOpacity(0.7), // White shadow color
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 3,top:3), // Offset for shadow effect
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.25,
-                        ),
-                        child: Image.asset(
-                          'assets/images/iste1.png',
-                          color: Colors.white.withOpacity(0.7), // White shadow color
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    // Original image layer
-                    ConstrainedBox(
+              ),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(right: 3, bottom: 3),
+                    child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.25,
+                        maxHeight: MediaQuery.of(context).size.height * 0.20, // Reduced height
                       ),
                       child: Image.asset(
                         'assets/images/iste1.png',
+                        color: Colors.white.withOpacity(0.7),
                         fit: BoxFit.contain,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                Form(
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 3, top: 3),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.20, // Reduced height
+                      ),
+                      child: Image.asset(
+                        'assets/images/iste1.png',
+                        color: Colors.white.withOpacity(0.7),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.20, // Reduced height
+                    ),
+                    child: Image.asset(
+                      'assets/images/iste1.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20), // Reduced space
+              Expanded(
+                child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
@@ -180,7 +179,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20), // Reduced space
                       TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
@@ -216,7 +215,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20), // Reduced space
                       SizedBox(
                         height: 40,
                         width: 150,
@@ -240,7 +239,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 15), // Reduced space
                       TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -253,13 +252,11 @@ class _SignInScreenState extends State<SignInScreen> {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      // Add padding at bottom to ensure content isn't hidden behind keyboard
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 280 : 30),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -53,7 +53,7 @@ class _ISTEAppState extends State<ISTEApp> {
   Widget build(BuildContext context) {
       final currentPages = [
         LandingPage(isDarkMode: isDarkMode),
-        CalendarPage(),
+        CalendarPage(isDarkMode: isDarkMode),
         TeamPage(isDarkMode: isDarkMode),
         ProfilePage(isDarkMode: isDarkMode),
         MoreOptionsPage(isDarkMode: isDarkMode)
