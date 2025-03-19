@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  final bool isDarkMode;
+  const ChangePasswordScreen({super.key, required this.isDarkMode});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -83,13 +84,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Define theme colors based on dark mode state
+    final Color backgroundColor = widget.isDarkMode ? Colors.grey[900]! : Colors.white;
+    final Color cardColor = widget.isDarkMode ? Colors.grey[850]! : Colors.white;
+    final Color primaryColor = widget.isDarkMode ? Colors.blue[300]! : Colors.blue;
+    final Color textColor = widget.isDarkMode ? Colors.white : Colors.black87;
+    final Color iconColor = widget.isDarkMode ? Colors.white70 : Colors.blue;
+    final Color borderColor = widget.isDarkMode ? Colors.grey[700]! : Colors.grey[300]!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Change Password'),
-        backgroundColor: Colors.blue,
+        backgroundColor: widget.isDarkMode ? Colors.grey[850] : Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: widget.isDarkMode ? 0 : 4,
       ),
-      body:
-      SingleChildScrollView(
+      backgroundColor: backgroundColor,
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -101,14 +112,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _currentPasswordController,
                   obscureText: _obscureCurrentPassword,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: 'Current Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelStyle: TextStyle(color: widget.isDarkMode ? Colors.blue[200] : Colors.blue[800]),
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureCurrentPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: iconColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -118,7 +132,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                    fillColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
+                    filled: true,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -131,14 +156,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _newPasswordController,
                   obscureText: _obscureNewPassword,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelStyle: TextStyle(color: widget.isDarkMode ? Colors.blue[200] : Colors.blue[800]),
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureNewPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: iconColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -148,7 +176,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                    fillColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
+                    filled: true,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -167,14 +206,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelStyle: TextStyle(color: widget.isDarkMode ? Colors.blue[200] : Colors.blue[800]),
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: iconColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -184,7 +226,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: borderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                    fillColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
+                    filled: true,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -202,13 +255,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _changePassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: widget.isDarkMode ? Colors.grey[700] : Colors.grey[300],
+                      disabledForegroundColor: widget.isDarkMode ? Colors.grey[500] : Colors.grey[600],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? CircularProgressIndicator(color: widget.isDarkMode ? Colors.white70 : Colors.white)
                         : const Text(
                       'Change Password',
                       style: TextStyle(fontSize: 16),

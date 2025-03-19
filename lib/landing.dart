@@ -169,7 +169,7 @@ class MoreOptionsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChangePasswordScreen(),
+                  builder: (context) => ChangePasswordScreen(isDarkMode:isDarkMode),
                 ),
               );
             },
@@ -364,7 +364,7 @@ class EventBox extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(20.0),
         ),
         child: Row(
           children: [
@@ -427,12 +427,29 @@ class EventBox extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Event Details'),
-          content: Text(title),
+          backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+          title: Text(
+            'Event Details',
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            title,
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
             ),
           ],
         );
@@ -473,7 +490,8 @@ class NotificationBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color avatarColor = _generateColorFromName(sender);
     // Get a good contrast color for text
-    final bool isAvatarDark = (avatarColor.red * 0.299 + avatarColor.green * 0.587 + avatarColor.blue * 0.114) < 128;
+    final bool isAvatarDark = (avatarColor.red * 0.299 +
+        avatarColor.green * 0.587 + avatarColor.blue * 0.114) < 128;
     final Color textColor = isAvatarDark ? Colors.white : Colors.black;
 
     return InkWell(
@@ -501,7 +519,8 @@ class NotificationBox extends StatelessWidget {
               child: Center(
                 child: Text(
                   sender.contains(' ')
-                      ? sender.split(' ').map((word) => word[0]).take(2).join('')
+                      ? sender.split(' ').map((word) => word[0]).take(2).join(
+                      '')
                       : sender[0],
                   style: TextStyle(
                     color: textColor,
@@ -553,12 +572,29 @@ class NotificationBox extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Message from $sender'),
-          content: Text(message),
+          backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+          title: Text(
+            'Message from $sender',
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            message,
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
             ),
           ],
         );
