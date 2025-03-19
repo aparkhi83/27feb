@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tired/screen/signin.dart';
 import 'package:tired/change.dart';
 import 'package:tired/calendar_page.dart';
 import 'Profile_page.dart';
 import 'Team_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:tired/main.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -141,7 +140,6 @@ class MoreOptionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF131318) : Colors.white,
       appBar: AppBar(
@@ -169,7 +167,7 @@ class MoreOptionsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChangePasswordScreen(isDarkMode:isDarkMode),
+                  builder: (context) => ChangePasswordScreen(isDarkMode: isDarkMode),
                 ),
               );
             },
@@ -185,16 +183,30 @@ class MoreOptionsPage extends StatelessWidget {
               style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
             ),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SignInScreen(),
-                ),
-              );
+              _signOut(context);
             },
           ),
           Divider(color: isDarkMode ? Colors.white : Colors.black),
         ],
+      ),
+    );
+  }
+}
+
+Future<void> _signOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    // The AuthGate will automatically redirect to the SignInScreen
+    if (!context.mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const AuthGate()),
+          (route) => false,
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Error signing out. Please try again.'),
+        backgroundColor: Colors.red,
       ),
     );
   }
