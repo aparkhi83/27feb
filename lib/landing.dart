@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tired/screen/signin.dart';
 import 'package:tired/change.dart';
 import 'package:tired/calendar_page.dart';
 import 'Profile_page.dart';
 import 'Team_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tired/main.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'aboutpage.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -134,9 +137,17 @@ class _ISTEAppState extends State<ISTEApp> {
   }
 }
 
+
 class MoreOptionsPage extends StatelessWidget {
   final bool isDarkMode;
   const MoreOptionsPage({super.key, required this.isDarkMode});
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +165,33 @@ class MoreOptionsPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          Divider(color: isDarkMode ? Colors.white : Colors.black),
+          ListTile(
+            leading: Icon(Icons.school, color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('ISTE', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+            onTap: () => _launchURL('https://iste.nitk.ac.in/#/'),
+          ),
+          Divider(color: isDarkMode ? Colors.white : Colors.black),
+          ListTile(
+            leading: Icon(Icons.female, color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('ISTE She', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+            onTap: () => _launchURL('https://iste.nitk.ac.in/#/she'),
+          ),
+          Divider(color: isDarkMode ? Colors.white : Colors.black),
+          ListTile(
+            leading: Icon(Icons.article, color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('ISTE Blog', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+            onTap: () => _launchURL('https://istenitk.wordpress.com/'),
+          ),
+          Divider(color: isDarkMode ? Colors.white : Colors.black),
+          ListTile(
+            leading: Icon(Icons.info, color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('About ISTE', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+            onTap: () {
+              Navigator.push(context, AboutISTEPage.route(isDarkMode: isDarkMode));
+            },
+          ),
+          Divider(color: isDarkMode ? Colors.white : Colors.black),
           ListTile(
             leading: Icon(
               Icons.lock,
@@ -167,7 +205,7 @@ class MoreOptionsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChangePasswordScreen(isDarkMode: isDarkMode),
+                  builder: (context) => ChangePasswordScreen(isDarkMode:isDarkMode),
                 ),
               );
             },
@@ -183,7 +221,12 @@ class MoreOptionsPage extends StatelessWidget {
               style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
             ),
             onTap: () {
-              _signOut(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SignInScreen(),
+                ),
+              );
             },
           ),
           Divider(color: isDarkMode ? Colors.white : Colors.black),
@@ -193,21 +236,13 @@ class MoreOptionsPage extends StatelessWidget {
   }
 }
 
-Future<void> _signOut(BuildContext context) async {
-  try {
-    await FirebaseAuth.instance.signOut();
-    // The AuthGate will automatically redirect to the SignInScreen
-    if (!context.mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const AuthGate()),
-          (route) => false,
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Error signing out. Please try again.'),
-        backgroundColor: Colors.red,
-      ),
+class SignInScreen extends StatelessWidget {
+  const SignInScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign In')),
+      body: const Center(child: Text('Sign In Page')),
     );
   }
 }
@@ -376,7 +411,7 @@ class EventBox extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(color: Colors.blue, width: 2.0),
           color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
           children: [
@@ -402,7 +437,8 @@ class EventBox extends StatelessWidget {
                   // Date with highlight
                   if (dateText.isNotEmpty)
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 4.0),
                       decoration: BoxDecoration(
                         color: isDarkMode ? Colors.blue[700] : Colors.blue[100],
                         borderRadius: BorderRadius.circular(16.0),
@@ -439,19 +475,15 @@ class EventBox extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+          backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           title: Text(
             'Event Details',
-            style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
           ),
           content: Text(
             title,
             style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
-            ),
+                color: isDarkMode ? Colors.white70 : Colors.black87),
           ),
           actions: [
             TextButton(
@@ -459,8 +491,7 @@ class EventBox extends StatelessWidget {
               child: Text(
                 'Close',
                 style: TextStyle(
-                  color: Colors.blue,
-                ),
+                    color: isDarkMode ? Colors.blue : Colors.black),
               ),
             ),
           ],
@@ -470,7 +501,7 @@ class EventBox extends StatelessWidget {
   }
 }
 
-class NotificationBox extends StatelessWidget {
+  class NotificationBox extends StatelessWidget {
   final String sender;
   final String message;
   final bool isDarkMode;
@@ -502,8 +533,7 @@ class NotificationBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color avatarColor = _generateColorFromName(sender);
     // Get a good contrast color for text
-    final bool isAvatarDark = (avatarColor.red * 0.299 +
-        avatarColor.green * 0.587 + avatarColor.blue * 0.114) < 128;
+    final bool isAvatarDark = (avatarColor.red * 0.299 + avatarColor.green * 0.587 + avatarColor.blue * 0.114) < 128;
     final Color textColor = isAvatarDark ? Colors.white : Colors.black;
 
     return InkWell(
@@ -531,8 +561,7 @@ class NotificationBox extends StatelessWidget {
               child: Center(
                 child: Text(
                   sender.contains(' ')
-                      ? sender.split(' ').map((word) => word[0]).take(2).join(
-                      '')
+                      ? sender.split(' ').map((word) => word[0]).take(2).join('')
                       : sender[0],
                   style: TextStyle(
                     color: textColor,
@@ -584,28 +613,21 @@ class NotificationBox extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+          backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           title: Text(
             'Message from $sender',
-            style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
           ),
           content: Text(
             message,
-            style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
-            ),
+            style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black87),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(
-                  color: Colors.blue,
-                ),
+                style: TextStyle(color: isDarkMode ? Colors.blue : Colors.black),
               ),
             ),
           ],

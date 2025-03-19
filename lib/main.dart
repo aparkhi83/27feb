@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tired/screen/signin.dart';
+import 'package:tired/screen/signin.dart' as signin;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,11 +57,11 @@ class AuthGate extends StatelessWidget {
 
               // Check if user document exists and has name field
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                return const ProfileSetupScreen();
+                return const signin.ProfileSetupScreen();
               } else {
                 final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
                 if (userData == null || !userData.containsKey('name')) {
-                  return const ProfileSetupScreen();
+                  return const signin.ProfileSetupScreen();
                 } else {
                   return const ISTEApp();
                 }
@@ -71,7 +71,7 @@ class AuthGate extends StatelessWidget {
         }
 
         // User is not signed in
-        return const SignInScreen();
+        return const signin.SignInScreen();
       },
     );
   }
