@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tired/screen/signin.dart';
 import 'package:tired/change.dart';
 import 'package:tired/calendar_page.dart';
 import 'Profile_page.dart';
@@ -8,37 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'aboutpage.dart';
-
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.teal,
-        scaffoldBackgroundColor: Colors.black,
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(fontSize: 16, color: Colors.white),
-          titleMedium: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      ),
-      home: const ISTEApp(),
-    );
-  }
-}
-
+import 'main.dart';
 
 class ISTEApp extends StatefulWidget {
   const ISTEApp({super.key});
@@ -123,6 +92,7 @@ class _ISTEAppState extends State<ISTEApp> {
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
           ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
             label: 'Team',
@@ -146,6 +116,25 @@ class MoreOptionsPage extends StatelessWidget {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // The AuthGate will automatically redirect to the SignInScreen
+      if (!context.mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthGate()),
+            (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error signing out. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -205,7 +194,7 @@ class MoreOptionsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChangePasswordScreen(isDarkMode:isDarkMode),
+                  builder: (context) => ChangePasswordScreen(isDarkMode: isDarkMode),
                 ),
               );
             },
@@ -221,12 +210,7 @@ class MoreOptionsPage extends StatelessWidget {
               style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
             ),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SignInScreen(),
-                ),
-              );
+              _signOut(context);
             },
           ),
           Divider(color: isDarkMode ? Colors.white : Colors.black),
@@ -235,18 +219,6 @@ class MoreOptionsPage extends StatelessWidget {
     );
   }
 }
-
-class SignInScreen extends StatelessWidget {
-  const SignInScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
-      body: const Center(child: Text('Sign In Page')),
-    );
-  }
-}
-
 class LandingPage extends StatefulWidget {
   final bool isDarkMode;
   const LandingPage({super.key, required this.isDarkMode});

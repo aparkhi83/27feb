@@ -98,15 +98,15 @@ class _SignInScreenState extends State<SignInScreen> {
       backgroundColor: const Color(0xFF002366),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             children: [
               const SizedBox(height: 50),
               const Text(
                 'Welcome to ISTE',
                 style: TextStyle(
-                  fontFamily: 'Arial',
-                  color: Colors.black,
+                  fontFamily: 'Sans Serif',
+                  color: Colors.white,
                   fontSize: 40,
                 ),
               ),
@@ -117,7 +117,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     margin: const EdgeInsets.only(right: 3, bottom: 3),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.20, // Reduced height
+                        maxHeight: MediaQuery.of(context).size.height * 0.20,
                       ),
                       child: Image.asset(
                         'assets/images/iste1.png',
